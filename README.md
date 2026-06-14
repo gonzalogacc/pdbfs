@@ -17,6 +17,12 @@ DBFS mounts your PostgreSQL database as a local filesystem, turning SQL tables, 
 - `/<table.table>/<column.column>/`: Lists unique values as `<value>.dbf`
 - `/<table.table>/<column.column>/<value>.dbf`: A text file containing the full row data.
 
+## Prerequisites
+
+- **Python 3.12+**
+- **System Dependencies**: You must have FUSE and its development headers installed (e.g., `libfuse-dev` and `fuse` on Ubuntu/Debian).
+- **PostgreSQL**: A running instance (a `docker-compose.yaml` is provided).
+
 ## Setup
 
 1. **Database**:
@@ -29,6 +35,7 @@ DBFS mounts your PostgreSQL database as a local filesystem, turning SQL tables, 
    ```bash
    uv sync
    ```
+   *Note: This will install SQLAlchemy, Psycopg2, and fuse-python.*
 
 3. **Configuration**:
    Edit `config.toml` to define your database connections and mount points:
