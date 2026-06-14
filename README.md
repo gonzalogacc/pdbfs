@@ -42,16 +42,27 @@ DBFS mounts your PostgreSQL database as a local filesystem, turning SQL tables, 
    *Note: This will install SQLAlchemy, Psycopg2, and fuse-python.*
 
 3. **Configuration**:
-   Edit `config.toml` to define your database connections and mount points:
+   Edit `config.toml` to define multiple database connections. Each will be mounted as a separate filesystem:
    ```toml
+   # Primary local development database
    [[databases]]
-   name = "local_test"
+   name = "local_dev"
    user = "user"
    password = "pass"
    host = "localhost"
    port = 5432
    db_name = "testdb"
-   mount_point = "mnt1"
+   mount_point = "mnt_local"
+
+   # Read-only replica or another database
+   [[databases]]
+   name = "analytics_replica"
+   user = "readonly_user"
+   password = "secure_password"
+   host = "db.example.com"
+   port = 5432
+   db_name = "analytics"
+   mount_point = "mnt_analytics"
    ```
 
 ## Usage
