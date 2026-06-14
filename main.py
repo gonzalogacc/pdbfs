@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-import io
-import json
-import os, stat, errno
+import os
+import stat
+import errno
 
 try:
     import _find_fuse_parts

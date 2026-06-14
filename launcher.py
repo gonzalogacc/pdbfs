@@ -3,7 +3,6 @@ import subprocess
 import os
 import sys
 import time
-import db
 
 def launch_mounts(config_path="config.toml"):
     try:

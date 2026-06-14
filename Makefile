@@ -12,3 +12,6 @@ unmount:
 clean:
 	rm -f /tmp/logs.log
 	rm -rf __pycache__ .mypy_cache
+
+ruff-fix:
+	uv run ruff check --fix

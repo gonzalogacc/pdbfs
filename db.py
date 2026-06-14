@@ -1,7 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 import datetime
-import os
 
 engine = None
 
@@ -16,7 +15,7 @@ def test_connection():
         with engine.connect() as conn:
             conn.execute(sa.text("SELECT 1"))
         return True
-    except Exception as e:
+    except Exception:
         return False
 
 def list_tables() -> list[str]:

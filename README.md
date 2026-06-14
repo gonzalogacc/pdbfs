@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo-pdbfs.png" alt="DBFS Logo" width="300">
+</p>
+
 # DBFS: PostgreSQL as a Filesystem
 
 DBFS mounts your PostgreSQL database as a local filesystem, turning SQL tables, columns, and rows into a browsable directory tree. Use standard CLI tools like `ls`, `grep`, and `cat` to explore your data.
