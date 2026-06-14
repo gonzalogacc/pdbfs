@@ -1,0 +1,21 @@
+services:
+  database:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: testdb
+      PGDATA: /data/postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/data/postgres
+    networks:
+      - db
+
+networks:
+  db:
+
+volumes:
+  db:
