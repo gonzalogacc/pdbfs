@@ -18,11 +18,6 @@ if not hasattr(fuse, '__version__'):
 
 fuse.fuse_python_api = (0, 2)
 
-hello_str = b'Hello World!\n'
-
-# Global tables will be populated after db.setup
-tables = []
-        
 class MyStat(fuse.Stat):
     def __init__(self):
         self.st_mode = 0
@@ -55,17 +50,17 @@ class DBFS(Fuse):
             st.st_nlink = 2
             return st
 
-        if len(pelements) == 1 and pelements[0] in tables:
+        if len(pelements) == 1 and pelements[0].endswith(".table"):
             st.st_mode = stat.S_IFDIR | 0o555
             st.st_nlink = 2
             return st
             
-        if len(pelements) == 2 and pelements[0] in tables and pelements[1].endswith(".column"):
+        if len(pelements) == 2 and pelements[0].endswith(".table") and pelements[1].endswith(".column"):
             st.st_mode = stat.S_IFDIR | 0o555
             st.st_nlink = 2
             return st
 
-        if len(pelements) == 3 and pelements[0] in tables and pelements[1].endswith(".column") and pelements[2].endswith('.dbf'):
+        if len(pelements) == 3 and pelements[0].endswith(".table") and pelements[1].endswith(".column") and pelements[2].endswith('.dbf'):
             st.st_mode = stat.S_IFREG | 0o444
             st.st_nlink = 1
             st.st_size = 4096 # Placeholder, ideally dynamic but 4k is safer than 999999
@@ -78,13 +73,13 @@ class DBFS(Fuse):
         dirs = ['.', '..']
         
         if path == '/':
-            dirs.extend(tables)
+            dirs.extend(db.list_tables())
 
-        elif len(pelements) == 1 and pelements[0] in tables:
+        elif len(pelements) == 1 and pelements[0].endswith(".table"):
             table_name = pelements[0].replace(".table", "")
             dirs.extend(db.list_table_columns(table_name))
 
-        elif len(pelements) == 2 and pelements[0] in tables and pelements[1].endswith('.column'):
+        elif len(pelements) == 2 and pelements[0].endswith(".table") and pelements[1].endswith('.column'):
             table_name = pelements[0].replace('.table', '')
             column_name = pelements[1].replace('.column', '')
             dirs.extend(db.list_column_rows(table_name, column_name))
@@ -140,9 +135,6 @@ def main():
     db.setup(args.db_user, args.db_pass, args.db_host, args.db_port, args.db_name)
     
     # Now we can safely list tables
-    global tables
-    tables = db.list_tables()
-
     # Reconstruct sys.argv for FUSE so it doesn't see our custom flags
     sys.argv = [sys.argv[0]] + fuse_args
 
