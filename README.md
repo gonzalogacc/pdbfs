@@ -25,10 +25,20 @@ DBFS mounts your PostgreSQL database as a local filesystem, turning SQL tables, 
 
 2. **Dependencies**:
    ```bash
-   pip install sqlalchemy psycopg2-binary fuse-python
+   pip install sqlalchemy psycopg2-binary fuse-python python-dotenv
    ```
 
-3. **Mount**:
+3. **Configuration**:
+   Create a `.env` file in the root directory (one is provided by default):
+   ```env
+   DB_USER=user
+   DB_PASS=pass
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=testdb
+   ```
+
+4. **Mount**:
    ```bash
    mkdir mnt1
    python main.py mnt1

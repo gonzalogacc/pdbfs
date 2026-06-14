@@ -1,8 +1,19 @@
 import sqlalchemy as sa
 from sqlalchemy import create_engine
 import datetime
+import os
+from dotenv import load_dotenv
 
-engine = create_engine("postgresql+psycopg2://user:pass@localhost:5432/testdb")
+load_dotenv()
+
+DB_USER = os.getenv("DB_USER", "user")
+DB_PASS = os.getenv("DB_PASS", "pass")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "testdb")
+
+DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+engine = create_engine(DATABASE_URL)
 
 
 def list_tables() -> list[str]:
