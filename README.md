@@ -8,6 +8,7 @@ DBFS mounts your PostgreSQL database as a local filesystem, turning SQL tables, 
 - **Dynamic Queries**: Reading a "file" dynamically executes the SQL required to fetch the data.
 - **ISO Date Handling**: Automatic conversion of date/timestamp columns to ISO 8601 filenames.
 - **Everything is a File**: Pipe database rows directly into other CLI utilities.
+- **Multi-Mount Support**: Mount multiple databases simultaneously via a single configuration.
 
 ## Directory Structure
 
@@ -24,46 +25,69 @@ DBFS mounts your PostgreSQL database as a local filesystem, turning SQL tables, 
    ```
 
 2. **Dependencies**:
+   Using `uv` (recommended):
    ```bash
-   pip install sqlalchemy psycopg2-binary fuse-python python-dotenv
+   uv sync
    ```
 
 3. **Configuration**:
-   Create a `.env` file in the root directory (one is provided by default):
-   ```env
-   DB_USER=user
-   DB_PASS=pass
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=testdb
+   Edit `config.toml` to define your database connections and mount points:
+   ```toml
+   [[databases]]
+   name = "local_test"
+   user = "user"
+   password = "pass"
+   host = "localhost"
+   port = 5432
+   db_name = "testdb"
+   mount_point = "mnt1"
    ```
 
-4. **Mount**:
-   ```bash
-   mkdir mnt1
-   python main.py mnt1
-   ```
+## Usage
 
-## Usage Examples
+### Mounting via Makefile (Recommended)
+The launcher tests every connection before spawning background mount processes using `uv run`.
+```bash
+make run
+```
 
-**List all tables:**
+### Manual Mounting
+You can also mount a single database directly:
+```bash
+uv run main.py mnt1 --db-user user --db-pass pass --db-host localhost --db-name testdb
+```
+
+### Unmounting
+To unmount everything defined in `config.toml`:
+```bash
+make unmount
+```
+
+To unmount a specific directory manually:
+```bash
+fusermount -u mnt1
+```
+
+## Examples
+
+**Browse tables:**
 ```bash
 ls /mnt1
 ```
 
-**Find a specific record by ID:**
+**View a specific row by a column value:**
 ```bash
-cat /mnt1/users.table/id.column/42.dbf
+cat /mnt1/users.table/email.column/admin@example.com.dbf
 ```
 
-**Search for a string across all rows in a column:**
+**Search across a column with grep:**
 ```bash
-grep "search_term" /mnt1/posts.table/content.column/*.dbf
+grep "important_info" /mnt1/logs.table/message.column/*.dbf
 ```
 
-## Unmounting
+## Maintenance
 
+To remove logs and clear cache:
 ```bash
-fusermount -u mnt1
+make clean
 ```
-# pdbfs

@@ -2,19 +2,22 @@ import sqlalchemy as sa
 from sqlalchemy import create_engine
 import datetime
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
+engine = None
 
-DB_USER = os.getenv("DB_USER", "user")
-DB_PASS = os.getenv("DB_PASS", "pass")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "testdb")
+def setup(user, password, host, port, db_name):
+    global engine
+    url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{db_name}"
+    engine = create_engine(url)
 
-DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-engine = create_engine(DATABASE_URL)
-
+def test_connection():
+    if engine is None: return False
+    try:
+        with engine.connect() as conn:
+            conn.execute(sa.text("SELECT 1"))
+        return True
+    except Exception as e:
+        return False
 
 def list_tables() -> list[str]:
     with engine.connect() as conn:

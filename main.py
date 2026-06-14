@@ -3,7 +3,6 @@ import io
 import json
 import os, stat, errno
 
-# pull in some spaghetti to make this stuff work without fuse-py being installed
 try:
     import _find_fuse_parts
 except ImportError:
@@ -11,17 +10,18 @@ except ImportError:
 import db
 import fuse
 from fuse import Fuse
-
+import argparse
+import sys
 
 if not hasattr(fuse, '__version__'):
     raise RuntimeError("your fuse-py doesn't know of fuse.__version__, probably it's too old.")
 
 fuse.fuse_python_api = (0, 2)
 
-hello_path = '/hello'
 hello_str = b'Hello World!\n'
 
-tables = db.list_tables()
+# Global tables will be populated after db.setup
+tables = []
         
 class MyStat(fuse.Stat):
     def __init__(self):
@@ -126,9 +126,28 @@ class DBFS(Fuse):
         return buf
 
 def main():
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument('--db-user', required=True)
+    parser.add_argument('--db-pass', required=True)
+    parser.add_argument('--db-host', default='localhost')
+    parser.add_argument('--db-port', default='5432')
+    parser.add_argument('--db-name', required=True)
+    
+    # Parse our known args, leave the rest for FUSE
+    args, fuse_args = parser.parse_known_args()
+    
+    # Initialize DB
+    db.setup(args.db_user, args.db_pass, args.db_host, args.db_port, args.db_name)
+    
+    # Now we can safely list tables
+    global tables
+    tables = db.list_tables()
+
+    # Reconstruct sys.argv for FUSE so it doesn't see our custom flags
+    sys.argv = [sys.argv[0]] + fuse_args
+
     usage="""
 Userspace postgres mount
-
 """ + Fuse.fusage
     server = DBFS(version="%prog " + fuse.__version__,
                      usage=usage,

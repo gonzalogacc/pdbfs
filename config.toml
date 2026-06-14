@@ -1,0 +1,18 @@
+[[databases]]
+name = "testdb"
+user = "user"
+password = "pass"
+host = "localhost"
+port = 5432
+db_name = "testdb"
+mount_point = "mnt1"
+
+# You can add more database entries here
+# [[databases]]
+# name = "prod_replica"
+# user = "readonly"
+# password = "secret_password"
+# host = "db.example.com"
+# port = 5432
+# db_name = "production"
+# mount_point = "mnt_prod"
