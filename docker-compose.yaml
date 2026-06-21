@@ -4,13 +4,15 @@ services:
     restart: always
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: testdb
       PGDATA: /data/postgres
     ports:
       - 5438:5432
     volumes:
       - db1:/data/postgres
+      - ./seed_scripts/00-create_tables.sql:/docker-entrypoint-initdb.d/00-create_tables.sql
+      - ./seed_scripts/01-seed_data.sql:/docker-entrypoint-initdb.d/01-seed_data.sql
     networks:
       - db
 
@@ -19,7 +21,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_DB: testdb
       PGDATA: /data/postgres
     ports:
