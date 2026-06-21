@@ -63,7 +63,12 @@ class DBFS(Fuse):
         if len(pelements) == 3 and pelements[0].endswith(".table") and pelements[1].endswith(".column") and pelements[2].endswith('.dbf'):
             st.st_mode = stat.S_IFREG | 0o444
             st.st_nlink = 1
-            st.st_size = 4096 # Placeholder, ideally dynamic but 4k is safer than 999999
+            # st.st_size = 4096 # Placeholder, ideally dynamic but 4k is safer than 999999
+            tablename = pelements[0].replace('.table', '')
+            column_name = pelements[1].replace('.column', '')
+            column_value = pelements[2].replace('.dbf', '')
+            st.st_size = db.get_record_length(tablename, column_name, column_value)
+
             return st
 
         return -errno.ENOENT

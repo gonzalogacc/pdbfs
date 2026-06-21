@@ -4,7 +4,8 @@ CREATE TABLE films (
     did         integer NOT NULL,
     date_prod   date,
     kind        varchar(10),
-    len         varchar(250)
+    len         varchar(250),
+    random_hash varchar
 );
 
 CREATE TABLE distributors (

@@ -10,7 +10,8 @@ def setup(user, password, host, port, db_name):
     engine = create_engine(url)
 
 def test_connection():
-    if engine is None: return False
+    if engine is None:
+        return False
     try:
         with engine.connect() as conn:
             conn.execute(sa.text("SELECT 1"))
@@ -53,6 +54,15 @@ def read_table_data(tablename: str, columname: str, columnvalue: str):
         query = sa.text(f"SELECT * from {tablename} where {columname} = :columnvalue;")
         result = conn.execute(query, {"columnvalue": columnvalue})
         return [row for row in result]
+
+def get_record_length(tablename: str, columname: str, columnvalue: str):
+
+    response = read_table_data(tablename, columname, columnvalue)
+    lines = [", ".join(str(item) for item in row) for row in response]
+    file_content = "\n".join(lines) + "\n"
+
+    payload = file_content.encode('utf-8')
+    return len(payload)
 
 if __name__ == "__main__":
     tables  = list_tables()
