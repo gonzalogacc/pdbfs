@@ -4,7 +4,7 @@ import stat
 import errno
 
 try:
-    import _find_fuse_parts
+    import _find_fuse_parts  # noqa: F401
 except ImportError:
     pass
 import db
